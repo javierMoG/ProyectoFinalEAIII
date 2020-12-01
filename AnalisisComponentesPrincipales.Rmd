@@ -1,0 +1,44 @@
+---
+title: "analisis_componentes_principales"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r librerias}
+library(corrplot)
+
+```
+
+## Carga y limpieza de datos
+
+
+```{r cars}
+library(readxl)
+library(stats)
+#Leemos la base de datos del Banco Mundial
+datosWB <- read_excel("aplicada3/ProyectoFinalEAIII/Data_Extract_From_World_Development_Indicators .xlsx")
+
+head(datosWB)
+#Tomamos las columnas de inter?s
+datosAux <- datosWB[,5:20]
+#Nombramos las columnas
+names(datosAux) <- c("CO2", "ER", "PIB", "GH", "EV", "AE", "GINI", "SS", 
+                     "SA", "P", "DE", "EF", "MI", "DEP", "ESC", "HOM")
+#Matriz de correlaci?n
+R <- cor(datosAux, use ="na.or.complete")
+corrplot(R, method="ellipse")
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
