@@ -1,0 +1,62 @@
+---
+title: "analisis_componentes_principales"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r librerias}
+library(corrplot)
+library(MASS)
+library(factoextra)
+library(tidyverse)
+```
+
+## Carga y limpieza de datos
+
+
+```{r cars}
+library(readxl)
+library(stats)
+#Leemos la base de datos del Banco Mundial
+datosWB <- read_excel("aplicada3/ProyectoFinalEAIII/Data_Extract_From_World_Development_Indicators .xlsx")
+
+head(datosWB)
+#Tomamos las columnas de inter?s
+datosAux <- datosWB[,5:20]
+#Nombramos las columnas
+names(datosAux) <- c("CO2", "ER", "PIB", "GH", "EV", "AE", "GINI", "SS", 
+                     "SA", "P", "DE", "EF", "MI", "DEP", "ESC", "HOM")
+
+
+#Matriz de correlaci?n
+R <- cor(datosAux, use ="na.or.complete")
+corrplot(R, method="ellipse")
+```
+```{r}
+paises <- datosWB %>% drop_na()
+paises <- paises[, c(1,3)]
+```
+
+```{r}
+datos <- datosWB[, 5:20] %>% drop_na()
+#Nombramos las columnas
+#names(datos) <- c("emisiones_co2", "empleo", "pib", "gasto", "esperanza_vida", "acces_electricidad", "gini", #"serv_sanidad", "serv_agua", "pobreza", "desempleo", "porcent_asalariados", "mort_infan", "porcent_dependientes", #"escuela", "homicidios")
+names(datos) <- c("CO2", "ER", "PIB", "GH", "EV", "AE", "GINI", "SS", 
+                     "SA", "P", "DE", "EF", "MI", "DEP", "ESC", "HOM")
+#datos2 <- datos[c(-16,-39, -50),-6]
+summary(datos)
+comp_prin <- princomp(datos, cor = T)
+summary(comp_prin, loadings = T)
+```
+```{r}
+fviz_screeplot(comp_prin)
+fviz_pca_biplot(comp_prin, axes = c(1,2))
+fviz_pca_biplot(comp_prin, axes = c(2,3))
+fviz_pca_biplot(comp_prin, axes = c(3,4))
+fviz_pca_biplot(comp_prin, axes = c(4,5))
+```
+

@@ -4,6 +4,7 @@ library(stats)
 datosWB <- read_excel("The Last Dance/Aplicada III/Proyecto/Data_Extract_From_World_Development_Indicators .xlsx")
 
 head(datosWB)
+
 #Nombramos las columnas
 names(datosWB) <- c("AÑO", "PAIS", "CO2", "ER", "PIB", "GH", "EV", "AE", "GINI", "SS", 
                      "SA", "P", "DE", "EF", "MI", "DEP", "ESC", "HOM")
@@ -98,3 +99,4 @@ for (i in 1:185){
 }
 
 summary(datos1)
+
