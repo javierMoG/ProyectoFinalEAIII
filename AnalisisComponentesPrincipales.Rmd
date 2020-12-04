@@ -22,7 +22,7 @@ library(tidyverse)
 library(readxl)
 library(stats)
 #Leemos la base de datos del Banco Mundial
-datosWB <- read_excel("aplicada3/ProyectoFinalEAIII/Data_Extract_From_World_Development_Indicators .xlsx")
+datosWB <- read_excel("./Data_Extract_From_World_Development_Indicators .xlsx")
 
 head(datosWB)
 #Tomamos las columnas de inter?s
@@ -37,16 +37,117 @@ R <- cor(datosAux, use ="na.or.complete")
 corrplot(R, method="ellipse")
 ```
 ```{r}
-paises <- datosWB %>% drop_na()
-paises <- paises[, c(1,3)]
+datosWB <- read_excel("./Data_Extract_From_World_Development_Indicators .xlsx")
+
+head(datosWB)
+
+#Nombramos las columnas
+names(datosWB) <- c("ANIO", "PAIS", "CO2", "ER", "PIB", "GH", "EV", "AE", "GINI", "SS", 
+                     "SA", "P", "DE", "EF", "MI", "DEP", "ESC", "HOM")
+#Tomamos las columnas de inter?s
+datosAux <- datosWB[,3:18]
+
+#Matriz de correlaci?n
+cor(datosAux, use ="na.or.complete")
+
+#Estad?sticas de los datos
+summary(datosAux)
+
+#Imputaci?n de datos con la media
+datos1<-datosWB
+#CO2
+#Notamos que para el 2018, ning?n pa?s tiene registros de C02
+for (i in 1:185){
+  if(is.na(datos1[i,"CO2"])){
+    p<-as.character(datos1[i,"PAIS"])
+    datos1[i,"CO2"]<-mean(datos1$CO2[datos1$PAIS==p], na.rm=T)
+  }
+}
+
+#ER
+#Solo hay un valor nulo
+p<-as.character(datos1$PAIS[is.na(datos1$ER)])
+datos1$ER[is.na(datos1$ER)]<-mean(datos1$ER[datos1$PAIS==p], na.rm=T)
+
+#AE
+for (i in 1:185){
+  if(is.na(datos1[i,"AE"])){
+    p<-as.character(datos1[i,"PAIS"])
+    datos1[i,"AE"]<-mean(datos1$AE[datos1$PAIS==p], na.rm=T)
+  }
+}
+
+#GINI
+for (i in 1:185){
+  if(is.na(datos1[i,"GINI"])){
+    p<-as.character(datos1[i,"PAIS"])
+    datos1[i,"GINI"]<-mean(datos1$GINI[datos1$PAIS==p], na.rm=T)
+  }
+}
+#Notar que NZL no tiene calculos del ?ndice de GINI para ning?n a?o
+
+#SS
+for (i in 1:185){
+  if(is.na(datos1[i,"SS"])){
+    p<-as.character(datos1[i,"PAIS"])
+    datos1[i,"SS"]<-mean(datos1$SS[datos1$PAIS==p], na.rm=T)
+  }
+}
+
+#SA
+for (i in 1:185){
+  if(is.na(datos1[i,"SA"])){
+    p<-as.character(datos1[i,"PAIS"])
+    datos1[i,"SA"]<-mean(datos1$SA[datos1$PAIS==p], na.rm=T)
+  }
+}
+
+#P
+for (i in 1:185){
+  if(is.na(datos1[i,"P"])){
+    p<-as.character(datos1[i,"PAIS"])
+    datos1[i,"P"]<-mean(datos1$P[datos1$PAIS==p], na.rm=T)
+  }
+}
+# Nueve pa?ses no tiene datos de la tasa de recuento de la pobreza en 
+# las l?neas nacionales de pobreza
+
+#DE
+#Solo tiene un valor nulo
+p<-as.character(datos1$PAIS[is.na(datos1$DE)])
+datos1$DE[is.na(datos1$DE)]<-mean(datos1$DE[datos1$PAIS==p], na.rm=T)
+
+#ESC
+for (i in 1:185){
+  if(is.na(datos1[i,"ESC"])){
+    p<-as.character(datos1[i,"PAIS"])
+    datos1[i,"ESC"]<-mean(datos1$ESC[datos1$PAIS==p], na.rm=T)
+  }
+}
+#Islandia no tiene datos de la media de a?os de escolaridad
+
+#HOM
+for (i in 1:185){
+  if(is.na(datos1[i,"HOM"])){
+    p<-as.character(datos1[i,"PAIS"])
+    datos1[i,"HOM"]<-mean(datos1$HOM[datos1$PAIS==p], na.rm=T)
+  }
+}
+
+summary(datos1)
+
 ```
 
+
 ```{r}
-datos <- datosWB[, 5:20] %>% drop_na()
+datos_anio <- datos1[datos1$ANIO == 2002,]
+datos <- datos_anio[,c(-1,-2,-12)]
+datos <- datos %>% drop_na()
+pib <- datos$PIB
+datos <- datos[,-3]
 #Nombramos las columnas
 #names(datos) <- c("emisiones_co2", "empleo", "pib", "gasto", "esperanza_vida", "acces_electricidad", "gini", #"serv_sanidad", "serv_agua", "pobreza", "desempleo", "porcent_asalariados", "mort_infan", "porcent_dependientes", #"escuela", "homicidios")
-names(datos) <- c("CO2", "ER", "PIB", "GH", "EV", "AE", "GINI", "SS", 
-                     "SA", "P", "DE", "EF", "MI", "DEP", "ESC", "HOM")
+datos$CO2 <- datos$CO2
 #datos2 <- datos[c(-16,-39, -50),-6]
 summary(datos)
 comp_prin <- princomp(datos, cor = T)
@@ -59,4 +160,9 @@ fviz_pca_biplot(comp_prin, axes = c(2,3))
 fviz_pca_biplot(comp_prin, axes = c(3,4))
 fviz_pca_biplot(comp_prin, axes = c(4,5))
 ```
+```{r}
+indice <- as.matrix(datos)%*%comp_prin$loadings[,1]
+cor(indice, pib)
+```
+
 
