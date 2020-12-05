@@ -25,7 +25,7 @@ names(datosWB) <- c("ANIO", "PAIS", "CO2", "ER", "PIB", "GH", "EV", "AE", "GINI"
                      "SA", "P", "DE", "EF", "MI", "DEP", "ESC", "HOM")
 #Tomamos las columnas de inter?s
 datosAux <- datosWB[,3:18]
-datosWB<- datosWB[,-12]
+datosWB<- datosWB[,-c(12)]
 #Matriz de correlaci?n
 cor(datosAux, use ="na.or.complete")
 
@@ -387,6 +387,7 @@ summary(comp_prin_minimo, loadings = T)
 analisis_componentes_principales <- function (datosBase){
   datosBase['ANIO']
   datos_anio<- datosBase[datosBase$ANIO == 2002,]
+  datos_anio <- datosBase
   datos <- datos_anio[,c(-1,-2)]
   datos <- datos %>% drop_na()
   pib <- datos$PIB
